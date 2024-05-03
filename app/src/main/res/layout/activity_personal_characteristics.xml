@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PersonalCharacteristics">
+
+    <EditText
+        android:background="@drawable/city"
+        android:id="@+id/yasEditText"
+        android:padding="10dp"
+        android:layout_width="347dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="316dp"
+        android:layout_marginEnd="32dp"
+        android:ems="10"
+        android:hint="Yaş"
+        android:inputType="text"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RadioButton
+        android:id="@+id/kadinRadioButton"
+        android:layout_width="137dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:text="KADIN"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/hobiSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/head" />
+
+    <RadioButton
+        android:id="@+id/erkekRadioButton"
+        android:layout_width="137dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="ERKEK"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/hobiSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/head" />
+
+    <EditText
+        android:id="@+id/boyEditText"
+        android:layout_width="347dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Boy"
+        android:padding="10dp"
+        android:inputType="text"
+        android:background="@drawable/city"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/sehirSpinner"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/sehirSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/sehirSpinner" />
+
+
+
+    <Spinner
+        android:id="@+id/hobiSpinner"
+        android:layout_width="347dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/city"
+        android:ems="10"
+        android:hint="Hobi"
+android:entries="@array/hobbies"
+        android:inputType="text"
+        android:padding="10dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/boyEditText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/boyEditText"
+        app:layout_constraintTop_toBottomOf="@+id/boyEditText" />
+
+    <Spinner
+        android:id="@+id/sehirSpinner"
+        android:layout_width="347dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:background="@drawable/city"
+        android:entries="@array/cities"
+        android:inputType="text"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/yasEditText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/yasEditText"
+        app:layout_constraintTop_toBottomOf="@+id/yasEditText" />
+
+    <ImageView
+        android:id="@+id/personalLogo"
+        android:layout_width="388dp"
+        android:layout_height="302dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/yasEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/undraw_couple_love_re_3fw6" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/login_and_signup_button"
+        android:text="kaydet"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/head"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/hobiSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/hobiSpinner" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

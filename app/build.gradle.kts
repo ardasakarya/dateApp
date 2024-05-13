@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-storage-ktx")
     implementation ("com.google.firebase:firebase-firestore:24.0.1")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("androidx.core:core-ktx:1.12.0")
@@ -53,4 +54,5 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx:20.3.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.squareup.picasso:picasso:2.8")
 }

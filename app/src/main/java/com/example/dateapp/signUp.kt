@@ -1,5 +1,6 @@
 package com.example.dateapp
 
+import android.Manifest
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
+import com.google.firebase.Timestamp
 
 class signUp : AppCompatActivity() {
     var secilenGorsel : Uri? = null
@@ -53,7 +55,7 @@ class signUp : AppCompatActivity() {
                     FirebaseStorage.getInstance().reference.child("images").child(gorselIsmi)
                 yuklenenGorselReference.downloadUrl.addOnSuccessListener { uri ->
                     val downloadUrl = uri.toString()
-                    val tarih = com.google.firebase.Timestamp.now()
+                    val tarih = Timestamp.now()
 
                     val postHashMap = hashMapOf<String, Any>()
                     postHashMap.put("gorselurl", downloadUrl)
@@ -109,9 +111,9 @@ class signUp : AppCompatActivity() {
     fun gorselSec(view: View)
     {
 
-        if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, arrayOf( android.Manifest.permission.READ_EXTERNAL_STORAGE),1)
+            ActivityCompat.requestPermissions(this, arrayOf( Manifest.permission.READ_EXTERNAL_STORAGE),1)
         }
         else
         {
@@ -139,7 +141,7 @@ class signUp : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val signUpImageView: ImageButton = findViewById(R.id.signUpImageView)
 
-        if(requestCode == 2 && resultCode == Activity.RESULT_OK && data != null)
+        if(requestCode == 2 && resultCode == RESULT_OK && data != null)
         {
             secilenGorsel = data.data
 

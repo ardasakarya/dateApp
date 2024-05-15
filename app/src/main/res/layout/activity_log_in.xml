@@ -34,7 +34,7 @@
         android:layout_marginTop="24dp"
         android:background="@drawable/login_and_signup_et"
         android:ems="10"
-        android:hint="Şifre"
+        android:hint="Password"
         android:inputType="textPassword"
         android:padding="12dp"
         android:textStyle="bold"

@@ -1,4 +1,5 @@
 package com.example.dateapp
+
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeView: SwipeFlingAdapterView
     private lateinit var imageUrls: MutableList<String>
     private lateinit var database : FirebaseFirestore
+    private lateinit var currentUser: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -20,6 +23,11 @@ class MainActivity : AppCompatActivity() {
         swipeView = findViewById(R.id.frame)
         imageUrls = mutableListOf()
         database = FirebaseFirestore.getInstance()
+
+        // Current user'ı al
+        currentUser = intent.getStringExtra("currentUser") ?: ""
+
+        // Verileri çek
         verileriAl()
 
         swipeView.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
@@ -49,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun verileriAl() {
+    private fun verileriAl() {
         database.collection("post").addSnapshotListener { snapshot, exception ->
             if (exception != null) {
                 Toast.makeText(this, exception.localizedMessage, Toast.LENGTH_LONG).show()
@@ -68,6 +76,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-
 }

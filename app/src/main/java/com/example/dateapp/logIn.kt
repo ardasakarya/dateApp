@@ -20,11 +20,6 @@ class logIn : AppCompatActivity() {
         val guncelKullanici = auth.currentUser
     }
 
-
-
-
-
-
     fun girisYap(view: View) {
 
         val epostaEditText: TextView = findViewById(R.id.epostaEditText)

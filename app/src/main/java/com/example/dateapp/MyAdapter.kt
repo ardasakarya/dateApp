@@ -22,23 +22,18 @@ class MyAdapter(private var context: Context, private var images: List<String>) 
         val viewHolder: ViewHolder
 
         // Check if the existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            val view = inflater.inflate(R.layout.item_card, parent, false)
-            viewHolder = ViewHolder(view)
-            view.tag = viewHolder
-        } else {
-            viewHolder = convertView.tag as ViewHolder
-        }
+        val view = convertView ?: inflater.inflate(R.layout.item_card, parent, false)
+        viewHolder = ViewHolder(view)
 
         // Get the image URL for the current position and load it into the image view using Picasso
         val imageUrl = getItem(position) as String
         Picasso.get().load(imageUrl).into(viewHolder.imageView)
 
-        return viewHolder.view
+        return view
     }
 
     // ViewHolder pattern to hold views
-    private class ViewHolder(val view: View) {
+    private class ViewHolder(view: View) {
         val imageView: ImageView = view.findViewById(R.id.image)
     }
 }

@@ -42,6 +42,10 @@ class signUp : AppCompatActivity() {
     fun kayitOl(view: View) {
         val EmailText: TextView = findViewById(R.id.signUpEpostaEditText)
         val PasswordText: TextView = findViewById(R.id.signUpSifreEditText)
+        val PhoneNumberText: TextView = findViewById(R.id.phoneNumberEditText)
+        val FullNameText: TextView = findViewById(R.id.fullNameEditText)
+        val phoneNumber = PhoneNumberText.text.toString()
+        val fullName = FullNameText.text.toString()
         val email = EmailText.text.toString()
         val sifre = PasswordText.text.toString()
 
@@ -64,6 +68,8 @@ class signUp : AppCompatActivity() {
                             val postHashMap = hashMapOf<String, Any>()
                             postHashMap["gorselurl"] = downloadUrl
                             postHashMap["email"] = guncelKullanici.email!!
+                            postHashMap["phoneNumber"] = phoneNumber
+                            postHashMap["fullName"] = fullName
                             postHashMap["tarih"] = tarih
 
                             database.collection("post").add(postHashMap).addOnCompleteListener { task ->

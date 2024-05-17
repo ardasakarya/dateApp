@@ -1,19 +1,17 @@
 package com.example.dateapp
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.dateapp.MyAdapter
-import com.example.dateapp.R
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var adapter: MyAdapter
     private lateinit var swipeView: SwipeFlingAdapterView
-    private lateinit var imageUrls: MutableList<String>
-    private lateinit var database : FirebaseFirestore
+    private lateinit var imageList: MutableList<ImageData>
+    private lateinit var database: FirebaseFirestore
     private lateinit var currentUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,39 +19,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         swipeView = findViewById(R.id.frame)
-        imageUrls = mutableListOf()
+        imageList = mutableListOf()
         database = FirebaseFirestore.getInstance()
 
-        // Current user'ı al
         currentUser = intent.getStringExtra("currentUser") ?: ""
 
-        // Verileri çek
         verileriAl()
 
         swipeView.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
             override fun removeFirstObjectInAdapter() {
-                // Kaydırma sonrası ilk elemanı kaldır
-                imageUrls.removeAt(0)
-                adapter.notifyDataSetChanged() // Adapter'ı güncelle
+                imageList.removeAt(0)
+                adapter.notifyDataSetChanged()
             }
 
             override fun onLeftCardExit(dataObject: Any) {
-                // Sol kaydırma işlemi
                 println("Left Swipe")
             }
 
             override fun onRightCardExit(dataObject: Any) {
-                // Sağ kaydırma işlemi
                 println("Right Swipe")
             }
 
-            override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {
-                // Adapter'da eleman kalmayınca tekrar yükleme yapılabilir.
-            }
+            override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
 
-            override fun onScroll(scrollProgressPercent: Float) {
-                // Kaydırma sırasında yapılacak işlemler
-            }
+            override fun onScroll(scrollProgressPercent: Float) {}
         })
     }
 
@@ -61,17 +50,27 @@ class MainActivity : AppCompatActivity() {
         database.collection("post").addSnapshotListener { snapshot, exception ->
             if (exception != null) {
                 Toast.makeText(this, exception.localizedMessage, Toast.LENGTH_LONG).show()
+                Log.e("FirestoreError", "Error fetching data", exception)
             } else {
                 if (snapshot != null && !snapshot.isEmpty) {
                     val documents = snapshot.documents
-                    imageUrls.clear()
+                    imageList.clear()
                     for (document in documents) {
-                        val gorselUrl = document.get("gorselurl") as String
-                        imageUrls.add(gorselUrl)
+                        val gorselUrl = document.getString("gorselurl") ?: ""
+                        val email = document.getString("email") ?: ""
+                        Log.d("FirestoreData", "Fetched document: $document")
+                        if (gorselUrl.isNotEmpty() && email.isNotEmpty()) {
+                            val imageData = ImageData(gorselUrl, email)
+                            imageList.add(imageData)
+                            Log.d("FirestoreSuccess", "Added: $gorselUrl, $email")
+                        } else {
+                            Log.e("FirestoreError", "Invalid data: $document")
+                        }
                     }
-                    // Veriler yüklendikten sonra adapter yaratılıp set ediliyor.
-                    adapter = MyAdapter(this@MainActivity, imageUrls)
+                    adapter = MyAdapter(this@MainActivity, imageList)
                     swipeView.adapter = adapter
+                } else {
+                    Log.d("Firestore", "No data found")
                 }
             }
         }

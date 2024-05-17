@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -29,33 +30,52 @@ class PersonalCharacteristics : AppCompatActivity() {
         val saveButton: Button = findViewById(R.id.saveButton)
         val hobiSpinner: Spinner= findViewById(R.id.hobiSpinner)
         saveButton.setOnClickListener {
-            val db = FirebaseFirestore.getInstance()
-            val hobi = hobiSpinner.selectedItem.toString()
-            val yas = yasEditText.text.toString()
-            val sehir = sehirSpinner.selectedItem.toString()
-            val boy = boyEditText.text.toString()
 
-            val cinsiyet = if (erkekRadioButton.isChecked) "Erkek" else "Kadın"
 
-            val user = hashMapOf(
-                "yaş" to yas,
-               "şehir" to sehir,
-                "boy" to boy,
-                "hobi" to hobi,
-                "cinsiyet" to cinsiyet
-            )
+                val yasStr = yasEditText.text.toString()
+                if (yasStr.isNotEmpty()) {
+                    val yas = yasStr.toInt()
+                    if (yas >= 18) {
+                        val db = FirebaseFirestore.getInstance()
+                        val hobi = hobiSpinner.selectedItem.toString()
+                        val yas = yasEditText.text.toString()
+                        val sehir = sehirSpinner.selectedItem.toString()
+                        val boy = boyEditText.text.toString()
 
-            db.collection("users").add(user)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("Firestore", "DocumentSnapshot added with ID: ${documentReference.id}")
-                    intent = Intent(this,MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                        val cinsiyet = if (erkekRadioButton.isChecked) "Erkek" else "Kadın"
+
+                        val user = hashMapOf(
+                            "yaş" to yas,
+                            "şehir" to sehir,
+                            "boy" to boy,
+                            "hobi" to hobi,
+                            "cinsiyet" to cinsiyet
+                        )
+
+                        db.collection("users").add(user)
+                            .addOnSuccessListener { documentReference ->
+                                Log.d(
+                                    "Firestore",
+                                    "DocumentSnapshot added with ID: ${documentReference.id}"
+                                )
+                                intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("Firestore", "Error adding document", e)
+                            }
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Yaşınız 18'den büyük olmak zorundadır",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
-                .addOnFailureListener { e ->
-                    Log.w("Firestore", "Error adding document", e)
                 }
-        }
+
+
     }
 }
 

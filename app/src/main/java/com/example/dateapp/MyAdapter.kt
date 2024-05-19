@@ -33,6 +33,7 @@ class MyAdapter(private var context: Context, private var images: List<ImageData
         val imageData = getItem(position) as ImageData
         Picasso.get().load(imageData.imageUrl).into(viewHolder.imageView)
         viewHolder.emailTextView.text = imageData.email
+        viewHolder.fullNameTextView.text = imageData.fullName
 
         return view
     }
@@ -40,5 +41,6 @@ class MyAdapter(private var context: Context, private var images: List<ImageData
     private class ViewHolder(view: View) {
         val imageView: ImageView = view.findViewById(R.id.image)
         val emailTextView: TextView = view.findViewById(R.id.nameText)
+        val fullNameTextView: TextView = view.findViewById(R.id.fullnameText)
     }
 }

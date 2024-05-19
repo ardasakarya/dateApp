@@ -58,11 +58,12 @@ class MainActivity : AppCompatActivity() {
                     for (document in documents) {
                         val gorselUrl = document.getString("gorselurl") ?: ""
                         val email = document.getString("email") ?: ""
+                        val fullName = document.getString("fullName") ?: ""
                         Log.d("FirestoreData", "Fetched document: $document")
-                        if (gorselUrl.isNotEmpty() && email.isNotEmpty()) {
-                            val imageData = ImageData(gorselUrl, email)
+                        if (gorselUrl.isNotEmpty() && email.isNotEmpty() && fullName.isNotEmpty()) {
+                            val imageData = ImageData(gorselUrl, email, fullName)
                             imageList.add(imageData)
-                            Log.d("FirestoreSuccess", "Added: $gorselUrl, $email")
+                            Log.d("FirestoreSuccess", "Added: $gorselUrl, $email, $fullName")
                         } else {
                             Log.e("FirestoreError", "Invalid data: $document")
                         }

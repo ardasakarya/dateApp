@@ -1,7 +1,13 @@
 package com.example.dateapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
@@ -33,17 +39,27 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onLeftCardExit(dataObject: Any) {
-                println("Left Swipe")
+                Toast.makeText(applicationContext, "left swipe", Toast.LENGTH_SHORT).show()
+
+
+//email, fotoğraf, fullname verilerini gönderip adapter döngüsünü başlat.
+
+
             }
 
             override fun onRightCardExit(dataObject: Any) {
-                println("Right Swipe")
+                Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
 
             override fun onScroll(scrollProgressPercent: Float) {}
         })
+
+        val menuButton: ImageView = findViewById(R.id.menuButton)
+        menuButton.setOnClickListener { view ->
+            showPopupMenu(view)
+        }
     }
 
     private fun verileriAl() {
@@ -76,4 +92,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        val inflater: MenuInflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.menu, popupMenu.menu)
+        popupMenu.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.begenenler -> {
+                    // "Beğenenler" seçeneği tıklandığında yapılacak işlemler
+                    val intent = Intent(this, rightSwipeActivity::class.java)
+                    startActivity(intent)
+                     finish()
+                    true
+                }
+                R.id.logout -> {
+                    // "Logout" seçeneği tıklandığında yapılacak işlemler
+                    Toast.makeText(this, "Logout seçildi", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
+    }
 }
+
+
+
+

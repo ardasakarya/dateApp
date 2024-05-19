@@ -40,14 +40,19 @@ class MainActivity : AppCompatActivity() {
 
             override fun onLeftCardExit(dataObject: Any) {
                 Toast.makeText(applicationContext, "left swipe", Toast.LENGTH_SHORT).show()
-
-
-//email, fotoğraf, fullname verilerini gönderip adapter döngüsünü başlat.
-
-
             }
 
             override fun onRightCardExit(dataObject: Any) {
+                if (dataObject is ImageData) {
+                    // Verileri rightSwipeActivity'ye gönder
+                    val intent = Intent(this@MainActivity, rightSwipeActivity::class.java).apply {
+                        putExtra("imageUrl", dataObject.imageUrl)
+                        putExtra("email", dataObject.email)
+                        putExtra("fullName", dataObject.fullName)
+                        putExtra("currentUser", currentUser) // Mevcut kullanıcının bilgilerini gönder
+                    }
+                    startActivity(intent)
+                }
                 Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
             }
 
@@ -92,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
         val inflater: MenuInflater = popupMenu.menuInflater
@@ -99,14 +105,13 @@ class MainActivity : AppCompatActivity() {
         popupMenu.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.begenenler -> {
-                    // "Beğenenler" seçeneği tıklandığında yapılacak işlemler
                     val intent = Intent(this, rightSwipeActivity::class.java)
+                    intent.putExtra("currentUser", currentUser) // Mevcut kullanıcı bilgisini gönder
                     startActivity(intent)
-                     finish()
+                    finish()
                     true
                 }
                 R.id.logout -> {
-                    // "Logout" seçeneği tıklandığında yapılacak işlemler
                     Toast.makeText(this, "Logout seçildi", Toast.LENGTH_SHORT).show()
                     true
                 }
@@ -116,7 +121,3 @@ class MainActivity : AppCompatActivity() {
         popupMenu.show()
     }
 }
-
-
-
-

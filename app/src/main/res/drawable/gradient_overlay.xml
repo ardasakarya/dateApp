@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/gradient_overlay.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Orijinal resminizi referans olarak ekleyin -->
+    <item>
+        <bitmap
+            android:src="@drawable/logo"
+            android:gravity="center" />
+    </item>
+    <!-- Alt kısımdan yukarı doğru karanlık geçiş efekti -->
+    <item>
+        <shape>
+            <gradient
+                android:startColor="@color/white"
+                android:endColor="@color/red"
+                android:angle="270"/>
+        </shape>
+    </item>
+</layer-list>

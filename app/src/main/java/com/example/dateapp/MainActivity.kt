@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
 
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var imageList: MutableList<ImageData>
     private lateinit var database: FirebaseFirestore
     private lateinit var currentUser: String
-
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         swipeView = findViewById(R.id.frame)
         imageList = mutableListOf()
         database = FirebaseFirestore.getInstance()
-
+auth= FirebaseAuth.getInstance()
         currentUser = intent.getStringExtra("currentUser") ?: ""
 
         verileriAl()
@@ -44,16 +45,26 @@ class MainActivity : AppCompatActivity() {
 
             override fun onRightCardExit(dataObject: Any) {
                 if (dataObject is ImageData) {
-                    // Verileri rightSwipeActivity'ye gönder
-                    val intent = Intent(this@MainActivity, rightSwipeActivity::class.java).apply {
-                        putExtra("imageUrl", dataObject.imageUrl)
-                        putExtra("email", dataObject.email)
-                        putExtra("fullName", dataObject.fullName)
-                        putExtra("currentUser", currentUser) // Mevcut kullanıcının bilgilerini gönder
-                    }
-                    startActivity(intent)
+                    // Verileri veritabanına kaydet
+                    val likedUserData = hashMapOf(
+                        "likerEmail" to currentUser,
+                        "likerFullName" to "Current User Full Name", // Mevcut kullanıcının adını buraya ekleyin
+                        "likerImageUrl" to "Current User Image URL", // Mevcut kullanıcının profil fotoğrafı URL'sini buraya ekleyin
+                        "likedEmail" to dataObject.email,
+                        "likedFullName" to dataObject.fullName,
+                        "likedImageUrl" to dataObject.imageUrl
+                    )
+
+                    database.collection("likes").add(likedUserData)
+                        .addOnSuccessListener {
+                            Log.d("FirestoreSuccess", "Right swipe data added successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("FirestoreError", "Error adding right swipe data", e)
+                        }
+
+                    Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
                 }
-                Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
@@ -106,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.begenenler -> {
                     val intent = Intent(this, rightSwipeActivity::class.java)
-                    intent.putExtra("currentUser", currentUser) // Mevcut kullanıcı bilgisini gönder
+                    intent.putExtra("currentUser", currentUser)
                     startActivity(intent)
                     finish()
                     true

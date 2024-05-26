@@ -51,7 +51,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="90dp"
         android:background="@drawable/login_and_signup_button"
-        android:text="Sign Up"
+        android:text="Sıgn Up"
         android:onClick="kayitOl"
         android:textColor="@color/white"
         android:textSize="20sp"

@@ -1,17 +1,18 @@
 package com.example.dateapp
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 class rightSwipeActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RightSwipeAdapter
-    private val rightSwipeList = mutableListOf<ImageData>()
+    private val likedUsersList = mutableListOf<LikedUserData>()
+    private lateinit var database: FirebaseFirestore
     private lateinit var currentUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,27 +22,39 @@ class rightSwipeActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.rightSwipeRecycler)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        adapter = RightSwipeAdapter(rightSwipeList)
+        adapter = RightSwipeAdapter(likedUsersList)
         recyclerView.adapter = adapter
 
+        database = FirebaseFirestore.getInstance()
         currentUser = intent.getStringExtra("currentUser") ?: ""
 
-        // Intent ile gelen veriyi al
-        val imageUrl = intent.getStringExtra("imageUrl")
-        val email = intent.getStringExtra("email")
-        val fullName = intent.getStringExtra("fullName")
-
-        // Veriyi listeye ekle ve adapteri güncelle
-        if (imageUrl != null && email != null && fullName != null) {
-            rightSwipeList.add(ImageData(imageUrl, email, fullName))
-            adapter.notifyDataSetChanged()
-        }
+        fetchLikedUsers()
     }
 
-    fun back(view: View)
-    {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+    private fun fetchLikedUsers() {
+        database.collection("likes")
+            .whereEqualTo("likedEmail", currentUser)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e("FirestoreError", "Error fetching data", exception)
+                } else {
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        val documents = snapshot.documents
+                        likedUsersList.clear()
+                        for (document in documents) {
+                            val likerEmail = document.getString("likerEmail") ?: ""
+                            val likerFullName = document.getString("likerFullName") ?: ""
+                            val likerImageUrl = document.getString("likerImageUrl") ?: ""
+                            val likedUserData = LikedUserData(
+                                likerEmail, likerFullName, likerImageUrl, currentUser
+                            )
+                            likedUsersList.add(likedUserData)
+                        }
+                        adapter.notifyDataSetChanged()
+                    } else {
+                        Log.d("Firestore", "No data found")
+                    }
+                }
+            }
     }
 }

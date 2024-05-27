@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeView: SwipeFlingAdapterView
     private lateinit var imageList: MutableList<ImageData>
     private lateinit var database: FirebaseFirestore
-    private lateinit var currentUser: String
     private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,49 +28,63 @@ class MainActivity : AppCompatActivity() {
         swipeView = findViewById(R.id.frame)
         imageList = mutableListOf()
         database = FirebaseFirestore.getInstance()
-auth= FirebaseAuth.getInstance()
-        currentUser = intent.getStringExtra("currentUser") ?: ""
+        auth = FirebaseAuth.getInstance()
 
-        verileriAl()
+        val currentUserEmail = auth.currentUser?.email
 
-        swipeView.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
-            override fun removeFirstObjectInAdapter() {
-                imageList.removeAt(0)
-                adapter.notifyDataSetChanged()
-            }
+        if (currentUserEmail != null) {
+            verileriAl()
 
-            override fun onLeftCardExit(dataObject: Any) {
-                Toast.makeText(applicationContext, "left swipe", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onRightCardExit(dataObject: Any) {
-                if (dataObject is ImageData) {
-                    // Verileri veritabanına kaydet
-                    val likedUserData = hashMapOf(
-                        "likerEmail" to currentUser,
-                        "likerFullName" to "Current User Full Name", // Mevcut kullanıcının adını buraya ekleyin
-                        "likerImageUrl" to "Current User Image URL", // Mevcut kullanıcının profil fotoğrafı URL'sini buraya ekleyin
-                        "likedEmail" to dataObject.email,
-                        "likedFullName" to dataObject.fullName,
-                        "likedImageUrl" to dataObject.imageUrl
-                    )
-
-                    database.collection("likes").add(likedUserData)
-                        .addOnSuccessListener {
-                            Log.d("FirestoreSuccess", "Right swipe data added successfully")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("FirestoreError", "Error adding right swipe data", e)
-                        }
-
-                    Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
+            swipeView.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
+                override fun removeFirstObjectInAdapter() {
+                    imageList.removeAt(0)
+                    adapter.notifyDataSetChanged()
                 }
-            }
 
-            override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
+                override fun onLeftCardExit(dataObject: Any) {
+                    Toast.makeText(applicationContext, "left swipe", Toast.LENGTH_SHORT).show()
+                }
 
-            override fun onScroll(scrollProgressPercent: Float) {}
-        })
+                override fun onRightCardExit(dataObject: Any) {
+                    if (dataObject is ImageData) {
+                        val likerEmail = currentUserEmail
+                        val likedEmail = dataObject.email
+
+                        database.collection("post")
+                            .whereEqualTo("email", likerEmail)
+                            .get()
+                            .addOnSuccessListener { documents ->
+                                if (!documents.isEmpty) {
+                                    val userDocument = documents.first()
+                                    val likerFullName = userDocument.getString("fullName") ?: ""
+                                    val likerImageUrl = userDocument.getString("gorselurl") ?: ""
+
+                                    val likedUserData = hashMapOf(
+                                        "likerEmail" to likerEmail,
+                                        "likerFullName" to likerFullName,
+                                        "likerImageUrl" to likerImageUrl,
+                                        "likedEmail" to likedEmail
+                                    )
+
+                                    database.collection("likes").add(likedUserData)
+                                        .addOnSuccessListener {
+                                            Log.d("FirestoreSuccess", "Right swipe data added successfully")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("FirestoreError", "Error adding right swipe data", e)
+                                        }
+
+                                    Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    }
+                }
+
+                override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
+
+                override fun onScroll(scrollProgressPercent: Float) {}
+            })
+        }
 
         val menuButton: ImageView = findViewById(R.id.menuButton)
         menuButton.setOnClickListener { view ->
@@ -117,12 +131,12 @@ auth= FirebaseAuth.getInstance()
             when (item.itemId) {
                 R.id.begenenler -> {
                     val intent = Intent(this, rightSwipeActivity::class.java)
-                    intent.putExtra("currentUser", currentUser)
                     startActivity(intent)
                     finish()
                     true
                 }
                 R.id.logout -> {
+                    auth.signOut()
                     Toast.makeText(this, "Logout seçildi", Toast.LENGTH_SHORT).show()
                     true
                 }

@@ -1,7 +1,9 @@
 package com.example.dateapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +32,12 @@ class rightSwipeActivity : AppCompatActivity() {
 
         fetchLikedUsers()
     }
-
+fun back(view: View)
+{
+    val intent = Intent(this, MainActivity::class.java)
+    startActivity(intent)
+    finish()
+}
     private fun fetchLikedUsers() {
         database.collection("likes")
             .whereEqualTo("likedEmail", currentUser)

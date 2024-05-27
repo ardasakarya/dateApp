@@ -131,8 +131,8 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.begenenler -> {
                     val intent = Intent(this, rightSwipeActivity::class.java)
+                    intent.putExtra("currentUserEmail", auth.currentUser?.email)
                     startActivity(intent)
-                    finish()
                     true
                 }
                 R.id.logout -> {

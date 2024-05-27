@@ -15,7 +15,7 @@ class rightSwipeActivity : AppCompatActivity() {
     private lateinit var adapter: RightSwipeAdapter
     private val likedUsersList = mutableListOf<LikedUserData>()
     private lateinit var database: FirebaseFirestore
-    private lateinit var currentUser: String
+    private lateinit var currentUserEmail: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,19 +28,20 @@ class rightSwipeActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         database = FirebaseFirestore.getInstance()
-        currentUser = intent.getStringExtra("currentUser") ?: ""
+        currentUserEmail = intent.getStringExtra("currentUserEmail") ?: ""
 
         fetchLikedUsers()
     }
-fun back(view: View)
-{
-    val intent = Intent(this, MainActivity::class.java)
-    startActivity(intent)
-    finish()
-}
+    fun back(view:View)
+    {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
     private fun fetchLikedUsers() {
         database.collection("likes")
-            .whereEqualTo("likedEmail", currentUser)
+            .whereEqualTo("likedEmail", currentUserEmail)
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     Log.e("FirestoreError", "Error fetching data", exception)
@@ -52,8 +53,9 @@ fun back(view: View)
                             val likerEmail = document.getString("likerEmail") ?: ""
                             val likerFullName = document.getString("likerFullName") ?: ""
                             val likerImageUrl = document.getString("likerImageUrl") ?: ""
+                            val likedEmail = document.getString("likedEmail") ?: ""
                             val likedUserData = LikedUserData(
-                                likerEmail, likerFullName, likerImageUrl, currentUser
+                                likerEmail, likerFullName, likerImageUrl, likedEmail
                             )
                             likedUsersList.add(likedUserData)
                         }

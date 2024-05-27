@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 
-class RightSwipeAdapter(private val dataList: List<LikedUserData>) : RecyclerView.Adapter<RightSwipeAdapter.ViewHolder>() {
+class RightSwipeAdapter(private val likedUsersList: List<LikedUserData>) : RecyclerView.Adapter<RightSwipeAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val fullNameText: TextView = view.findViewById(R.id.fullNameTextItem)
-        val likerEmailText: TextView = view.findViewById(R.id.emailTextItem)
-        val profileImage: ImageView = view.findViewById(R.id.profileImageItem)
+        val likerImageView: ImageView = view.findViewById(R.id.profileImageItem)
+        val likerFullNameTextView: TextView = view.findViewById(R.id.fullNameTextItem)
+        val likerEmailTextView: TextView = view.findViewById(R.id.emailTextItem)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,11 +22,18 @@ class RightSwipeAdapter(private val dataList: List<LikedUserData>) : RecyclerVie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = dataList[position]
-        holder.fullNameText.text = data.likerFullName
-        holder.likerEmailText.text = data.likerEmail
-        Glide.with(holder.profileImage.context).load(data.likerImageUrl).into(holder.profileImage)
+        val userData = likedUsersList[position]
+
+        if (!userData.likerImageUrl.isNullOrEmpty()) {
+            Picasso.get().load(userData.likerImageUrl).into(holder.likerImageView)
+        } else {
+            // Yedek bir resim yükleyin veya bir hata resmi kullanın
+            holder.likerImageView.setImageResource(R.drawable.logo) // `placeholder_image` adında bir yedek resim ekleyin
+        }
+
+        holder.likerFullNameTextView.text = userData.likerFullName
+        holder.likerEmailTextView.text = userData.likerEmail
     }
 
-    override fun getItemCount() = dataList.size
+    override fun getItemCount(): Int = likedUsersList.size
 }

@@ -1,0 +1,33 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+
+    <LinearLayout
+        android:id="@+id/me_chat_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:layout_marginStart="80dp"
+        >
+
+        <TextView
+            android:id="@+id/meTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="10dp"
+            android:padding="8dp"
+            android:textIsSelectable="true"
+
+            android:text=""
+            android:background="@drawable/message_item_me"
+            android:backgroundTint="@color/red"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+    </RelativeLayout>

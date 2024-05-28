@@ -75,6 +75,7 @@ class signUp : AppCompatActivity() {
                             database.collection("post").add(postHashMap).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     finish()
+
                                 }
                             }.addOnFailureListener { exception ->
                                 Toast.makeText(
@@ -91,24 +92,19 @@ class signUp : AppCompatActivity() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                } else {
+                    val intent = Intent(this, PersonalCharacteristics::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            } else {
                     Toast.makeText(
                         applicationContext,
-                        "Görsel seçimi yapmadınız veya kullanıcı doğrulanmadı!",
+                        "Kayıt başarısız:Lütfen tüm alanları doğru ve eksiksiz doldurduğunuzdan emin olun!  ",
                         Toast.LENGTH_LONG
                     ).show()
                 }
 
-                val intent = Intent(this, PersonalCharacteristics::class.java)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(
-                    applicationContext,
-                    "Kayıt başarısız: ${task.exception?.localizedMessage}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+
         }.addOnFailureListener { exception ->
             Toast.makeText(
                 applicationContext,

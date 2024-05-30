@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/bot_chat_view"
+        android:id="@+id/you_chat_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -17,7 +17,7 @@
             android:textIsSelectable="true"
             android:padding="8dp"
             android:textAlignment="viewStart"
-            android:id="@+id/botTextView"
+            android:id="@+id/youTextView"
             android:layout_width="wrap_content"
             android:text=""
             android:inputType="textMultiLine"

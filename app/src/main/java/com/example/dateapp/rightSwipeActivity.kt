@@ -1,5 +1,6 @@
 package com.example.dateapp
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -46,11 +47,29 @@ class rightSwipeActivity : AppCompatActivity() {
         finish()
     }
 
-fun mesajGit(view: View)
-{
-    intent = Intent(applicationContext,messageActivity::class.java)
-    startActivity(intent)
-}
+    fun mesajGit(view: View) {
+        // Firestore veritabanına erişim sağla
+        val db = FirebaseFirestore.getInstance()
+
+        // Veritabanından likedEmail değerini al
+        db.collection("likes").get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val likedEmail = document.getString("likedEmail") ?: ""
+
+                    // Veriyi başka bir sayfaya göndermek için Intent oluştur
+                    val intent = Intent(applicationContext, messageActivity::class.java)
+                    intent.putExtra("likedEmail", likedEmail)
+                    startActivity(intent)
+                    return@addOnSuccessListener  // İlk belge bulunduğunda işlemi sonlandır
+                }
+                Log.d(TAG, "Belge bulunamadı.")
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "Veri alınamadı: ", exception)
+            }
+    }
+
 
     private fun fetchLikedUsers() {
         database.collection("likes")

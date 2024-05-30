@@ -122,7 +122,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+fun messageBox(view: View)
+{
+    val intent = Intent(this, messageBox::class.java)
+    startActivity(intent)
 
+}
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
         val inflater: MenuInflater = popupMenu.menuInflater

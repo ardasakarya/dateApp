@@ -7,20 +7,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 
-data class Message(
-    val text: String,
-    val senderEmail: String,
-    val timestamp: Long
-)
 
-class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+class MessageAdapter(private val messages: List<Message>, private val currentUserEmail: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val VIEW_TYPE_ME = 1
     private val VIEW_TYPE_YOU = 2
 
     override fun getItemViewType(position: Int): Int {
         val message = messages[position]
-        return if (message.senderEmail == FirebaseAuth.getInstance().currentUser?.email) {
+        return if (message.senderEmail == currentUserEmail) {
             VIEW_TYPE_ME
         } else {
             VIEW_TYPE_YOU

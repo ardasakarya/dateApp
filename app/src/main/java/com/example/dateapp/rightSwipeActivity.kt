@@ -55,11 +55,11 @@ class rightSwipeActivity : AppCompatActivity() {
         db.collection("likes").get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val likedEmail = document.getString("likedEmail") ?: ""
+                    val likerEmail = document.getString("likerEmail") ?: ""
 
                     // Veriyi başka bir sayfaya göndermek için Intent oluştur
                     val intent = Intent(applicationContext, messageActivity::class.java)
-                    intent.putExtra("likedEmail", likedEmail)
+                    intent.putExtra("likerEmail", likerEmail)
                     startActivity(intent)
                     return@addOnSuccessListener  // İlk belge bulunduğunda işlemi sonlandır
                 }

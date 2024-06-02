@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
+    <color name="purple">#fe3c72</color>
+    <color name="purple2">#e5d0ff</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="red">#f96163</color>
@@ -10,5 +10,9 @@
     <color name="primary">#1C2E46</color>
     <color name="Barut_gri">#9fb6cd</color>
     <color name="red2">#CC3333</color>
+    <color name="red3">#EA2B1F</color>
+    <color name="red4">#fd5564</color>
     <color name="gri">#808080</color>
+    <color name="mor">#450920</color>
+    <color name="kırmızı">#ffc2d1</color>
 </resources>

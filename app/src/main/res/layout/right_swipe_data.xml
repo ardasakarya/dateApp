@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:id="@+id/begenenlerData"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp"
+    android:padding="10dp"
+    android:background="@drawable/liker_data"
     android:onClick="mesajGit"
 
     >
@@ -20,6 +22,7 @@
         android:background="@drawable/profil_fotograf_item" />
 
     <LinearLayout
+
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -32,7 +35,7 @@
             android:layout_height="wrap_content"
             android:text="Full Name"
             android:textSize="20sp"
-            android:textColor="@android:color/black"
+            android:textColor="@color/mor"
             android:textStyle="bold" />
 
         <!-- Email Address -->
@@ -42,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="email@example.com"
             android:textSize="20sp"
-            android:textColor="@android:color/darker_gray" />
+            android:textColor="@color/kırmızı" />
     </LinearLayout>
 
 </LinearLayout>

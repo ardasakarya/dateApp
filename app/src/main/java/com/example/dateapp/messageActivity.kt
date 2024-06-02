@@ -37,11 +37,13 @@ class messageActivity : AppCompatActivity() {
         messageRecycler.layoutManager = LinearLayoutManager(this)
         messageRecycler.adapter = adapter
 
-        val otherUserEmail = intent.getStringExtra("likedEmail")
+        val otherUserEmail = intent.getStringExtra("likerEmail")
+        Log.d("MessageActivity", "Other User Email: $otherUserEmail")
 
         if (currentUserEmail.isNotEmpty() && otherUserEmail != null) {
+            val chatId = getChatId(currentUserEmail, otherUserEmail)
             val chatRef = db.collection("chats")
-                .document("$currentUserEmail-$otherUserEmail")
+                .document(chatId)
                 .collection("messages")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
 
@@ -65,24 +67,34 @@ class messageActivity : AppCompatActivity() {
             }
         }
     }
-            fun messageSend(view: View) {
-                val currentUserEmail = auth.currentUser?.email ?: ""
-                val otherUserEmail = intent.getStringExtra("likedEmail")
-                val text = messageEditText.text.toString()
-                if (text.isNotEmpty()) {
-                    val message = Message(text, currentUserEmail, System.currentTimeMillis())
-                    db.collection("chats")
-                        .document("$currentUserEmail-$otherUserEmail")
-                        .collection("messages")
-                        .add(message)
-                        .addOnSuccessListener {
-                            messageEditText.text.clear()
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("MessageActivity", "Error adding message", e)
-                        }
+
+    fun messageSend(view: View) {
+        val currentUserEmail = auth.currentUser?.email ?: ""
+        val otherUserEmail = intent.getStringExtra("likerEmail")
+        Log.d("MessageActivity", "Sending message to: $otherUserEmail")
+
+        val text = messageEditText.text.toString()
+        if (text.isNotEmpty() && otherUserEmail != null) {
+            val chatId = getChatId(currentUserEmail, otherUserEmail)
+            val message = Message(text, currentUserEmail, otherUserEmail, System.currentTimeMillis())
+            db.collection("chats")
+                .document(chatId)
+                .collection("messages")
+                .add(message)
+                .addOnSuccessListener {
+                    messageEditText.text.clear()
                 }
-            }
+                .addOnFailureListener { e ->
+                    Log.w("MessageActivity", "Error adding message", e)
+                }
         }
+    }
 
-
+    private fun getChatId(user1: String, user2: String): String {
+        return if (user1 < user2) {
+            "$user1-$user2"
+        } else {
+            "$user2-$user1"
+        }
+    }
+}

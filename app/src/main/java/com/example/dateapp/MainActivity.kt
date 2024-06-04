@@ -15,76 +15,83 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var adapter: MyAdapter
-    private lateinit var swipeView: SwipeFlingAdapterView
-    private lateinit var imageList: MutableList<ImageData>
-    private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseFirestore
+    private lateinit var flingContainer: SwipeFlingAdapterView
+    private var imageList = ArrayList<ImageData>()
+    private var arrayAdapter: MyAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        swipeView = findViewById(R.id.frame)
-        imageList = mutableListOf()
-        database = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        database = FirebaseFirestore.getInstance()
 
-        val currentUserEmail = auth.currentUser?.email
+        flingContainer = findViewById(R.id.frame)
 
-        if (currentUserEmail != null) {
-            verileriAl()
+        verileriAl()
 
-            swipeView.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
-                override fun removeFirstObjectInAdapter() {
-                    imageList.removeAt(0)
-                    adapter.notifyDataSetChanged()
-                }
+        arrayAdapter = MyAdapter(this, imageList)
+        flingContainer.adapter = arrayAdapter
 
-                override fun onLeftCardExit(dataObject: Any) {
-                    Toast.makeText(applicationContext, "left swipe", Toast.LENGTH_SHORT).show()
-                }
+        flingContainer.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
+            override fun removeFirstObjectInAdapter() {
+                imageList.removeAt(0)
+                arrayAdapter?.notifyDataSetChanged()
+            }
 
-                override fun onRightCardExit(dataObject: Any) {
-                    if (dataObject is ImageData) {
-                        val likerEmail = currentUserEmail
-                        val likedEmail = dataObject.email
+            override fun onLeftCardExit(dataObject: Any) {
+                Toast.makeText(applicationContext, "left swipe", Toast.LENGTH_SHORT).show()
+            }
 
-                        database.collection("post")
-                            .whereEqualTo("email", likerEmail)
-                            .get()
-                            .addOnSuccessListener { documents ->
-                                if (!documents.isEmpty) {
-                                    val userDocument = documents.first()
-                                    val likerFullName = userDocument.getString("fullName") ?: ""
-                                    val likerImageUrl = userDocument.getString("gorselurl") ?: ""
+            override fun onRightCardExit(dataObject: Any) {
+                if (dataObject is ImageData) {
+                    val currentUserEmail = auth.currentUser?.email ?: return
+                    val currentUserUID = auth.currentUser?.uid ?: return
+                    val receiverUID = dataObject.uid
 
-                                    val likedUserData = hashMapOf(
-                                        "likerEmail" to likerEmail,
-                                        "likerFullName" to likerFullName,
-                                        "likerImageUrl" to likerImageUrl,
-                                        "likedEmail" to likedEmail
-                                    )
+                    database.collection("post")
+                        .whereEqualTo("email", currentUserEmail)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            if (!documents.isEmpty) {
+                                val userDocument = documents.first()
+                                val likerFullName = userDocument.getString("fullName") ?: ""
+                                val likerImageUrl = userDocument.getString("gorselurl") ?: ""
 
-                                    database.collection("likes").add(likedUserData)
-                                        .addOnSuccessListener {
-                                            Log.d("FirestoreSuccess", "Right swipe data added successfully")
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("FirestoreError", "Error adding right swipe data", e)
-                                        }
+                                val likedUserData = hashMapOf(
+                                    "likerEmail" to currentUserEmail,
+                                    "likerFullName" to likerFullName,
+                                    "likerImageUrl" to likerImageUrl,
+                                    "likerUid" to currentUserUID,
+                                    "likedEmail" to dataObject.email,
+                                    "likedUid" to receiverUID
+                                )
 
-                                    Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
-                                }
+                                database.collection("likes").add(likedUserData)
+                                    .addOnSuccessListener {
+                                        Log.d("FirestoreSuccess", "Right swipe data added successfully")
+                                        val intent = Intent(this@MainActivity, messageActivity::class.java)
+                                        intent.putExtra("receiverUID", receiverUID)
+
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("FirestoreError", "Error adding right swipe data", e)
+                                    }
+
+                                Toast.makeText(applicationContext, "right swipe", Toast.LENGTH_SHORT).show()
                             }
-                    }
+                        }
                 }
+            }
 
-                override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
 
-                override fun onScroll(scrollProgressPercent: Float) {}
-            })
-        }
+
+            override fun onAdapterAboutToEmpty(itemsInAdapter: Int) {}
+
+            override fun onScroll(scrollProgressPercent: Float) {}
+        })
 
         val menuButton: ImageView = findViewById(R.id.menuButton)
         menuButton.setOnClickListener { view ->
@@ -105,29 +112,25 @@ class MainActivity : AppCompatActivity() {
                         val gorselUrl = document.getString("gorselurl") ?: ""
                         val email = document.getString("email") ?: ""
                         val fullName = document.getString("fullName") ?: ""
+                        val uid = document.getString("uid") ?: ""
                         Log.d("FirestoreData", "Fetched document: $document")
-                        if (gorselUrl.isNotEmpty() && email.isNotEmpty() && fullName.isNotEmpty()) {
-                            val imageData = ImageData(gorselUrl, email, fullName)
+                        if (gorselUrl.isNotEmpty() && email.isNotEmpty() && fullName.isNotEmpty() && uid.isNotEmpty()) {
+                            val imageData = ImageData(gorselUrl, email, fullName, uid)
                             imageList.add(imageData)
-                            Log.d("FirestoreSuccess", "Added: $gorselUrl, $email, $fullName")
-                        } else {
-                            Log.e("FirestoreError", "Invalid data: $document")
+                            Log.d("FirestoreSuccess", "Added: $gorselUrl, $email, $fullName, $uid")
                         }
                     }
-                    adapter = MyAdapter(this@MainActivity, imageList)
-                    swipeView.adapter = adapter
-                } else {
-                    Log.d("Firestore", "No data found")
+                    arrayAdapter?.notifyDataSetChanged()
                 }
             }
         }
     }
-fun messageBox(view: View)
-{
-    val intent = Intent(this, messageBox::class.java)
-    startActivity(intent)
 
-}
+    fun messageBox(view: View) {
+        val intent = Intent(this, messageBox::class.java)
+        startActivity(intent)
+    }
+
     private fun showPopupMenu(view: View) {
         val popupMenu = PopupMenu(this, view)
         val inflater: MenuInflater = popupMenu.menuInflater
@@ -138,7 +141,6 @@ fun messageBox(view: View)
                     val intent = Intent(this, rightSwipeActivity::class.java)
                     intent.putExtra("currentUserEmail", auth.currentUser?.email)
                     startActivity(intent)
-
                     true
                 }
                 R.id.logout -> {

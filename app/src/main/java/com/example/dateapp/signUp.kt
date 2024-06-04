@@ -15,7 +15,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -68,6 +67,7 @@ class signUp : AppCompatActivity() {
                             val postHashMap = hashMapOf<String, Any>()
                             postHashMap["gorselurl"] = downloadUrl
                             postHashMap["email"] = guncelKullanici.email!!
+                            postHashMap["uid"] = guncelKullanici.uid
                             postHashMap["phoneNumber"] = phoneNumber
                             postHashMap["fullName"] = fullName
                             postHashMap["tarih"] = tarih
@@ -75,7 +75,6 @@ class signUp : AppCompatActivity() {
                             database.collection("post").add(postHashMap).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     finish()
-
                                 }
                             }.addOnFailureListener { exception ->
                                 Toast.makeText(
@@ -97,14 +96,12 @@ class signUp : AppCompatActivity() {
                     finish()
                 }
             } else {
-                    Toast.makeText(
-                        applicationContext,
-                        "Kayıt başarısız:Lütfen tüm alanları doğru ve eksiksiz doldurduğunuzdan emin olun!  ",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-
+                Toast.makeText(
+                    applicationContext,
+                    "Kayıt başarısız:Lütfen tüm alanları doğru ve eksiksiz doldurduğunuzdan emin olun!  ",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }.addOnFailureListener { exception ->
             Toast.makeText(
                 applicationContext,

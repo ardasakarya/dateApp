@@ -1,3 +1,4 @@
+// messageActivity
 package com.example.dateapp
 
 import android.os.Bundle
@@ -5,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,17 +33,17 @@ class messageActivity : AppCompatActivity() {
         sendButton = findViewById(R.id.sendButton)
 
         messages = mutableListOf()
-        val currentUserEmail = auth.currentUser?.email ?: ""
-        adapter = MessageAdapter(messages, currentUserEmail)
+        val currentUserUID = auth.currentUser?.uid ?: ""
+        adapter = MessageAdapter(messages, currentUserUID)
 
         messageRecycler.layoutManager = LinearLayoutManager(this)
         messageRecycler.adapter = adapter
 
-        val otherUserEmail = intent.getStringExtra("likerEmail")
-        Log.d("MessageActivity", "Other User Email: $otherUserEmail")
+        val receiverUID = intent.getStringExtra("receiverUID")
+        Log.d("MessageActivity", "Receiver User UID: $receiverUID")
 
-        if (currentUserEmail.isNotEmpty() && otherUserEmail != null) {
-            val chatId = getChatId(currentUserEmail, otherUserEmail)
+        if (currentUserUID.isNotEmpty() && receiverUID != null) {
+            val chatId = getChatId(currentUserUID, receiverUID)
             val chatRef = db.collection("chats")
                 .document(chatId)
                 .collection("messages")
@@ -66,35 +68,37 @@ class messageActivity : AppCompatActivity() {
                 }
             }
         }
+
+        sendButton.setOnClickListener {
+            messageSend(receiverUID)
+        }
     }
 
-    fun messageSend(view: View) {
-        val currentUserEmail = auth.currentUser?.email ?: ""
-        val otherUserEmail = intent.getStringExtra("likerEmail")
-        Log.d("MessageActivity", "Sending message to: $otherUserEmail")
-
+    private fun messageSend(receiverUID: String?) {
+        val currentUserUID = auth.currentUser?.uid ?: ""
         val text = messageEditText.text.toString()
-        if (text.isNotEmpty() && otherUserEmail != null) {
-            val chatId = getChatId(currentUserEmail, otherUserEmail)
-            val message = Message(text, currentUserEmail, otherUserEmail, System.currentTimeMillis())
+        if (text.isNotEmpty() && receiverUID != null) {
+            val chatId = getChatId(currentUserUID, receiverUID)
+            val message = Message(text, currentUserUID, receiverUID, System.currentTimeMillis())
             db.collection("chats")
                 .document(chatId)
                 .collection("messages")
                 .add(message)
                 .addOnSuccessListener {
                     messageEditText.text.clear()
+                    Toast.makeText(this, "Message sent", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
-                    Log.w("MessageActivity", "Error adding message", e)
+                    Log.e("MessageActivity", "Error sending message", e)
                 }
         }
     }
 
-    private fun getChatId(user1: String, user2: String): String {
-        return if (user1 < user2) {
-            "$user1-$user2"
+    private fun getChatId(uid1: String, uid2: String): String {
+        return if (uid1 < uid2) {
+            "$uid1-$uid2"
         } else {
-            "$user2-$user1"
+            "$uid2-$uid1"
         }
     }
 }

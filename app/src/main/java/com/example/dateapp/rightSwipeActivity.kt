@@ -1,3 +1,4 @@
+// rightSwipeActivity
 package com.example.dateapp
 
 import android.content.ContentValues.TAG
@@ -34,42 +35,25 @@ class rightSwipeActivity : AppCompatActivity() {
         currentUserEmail = intent.getStringExtra("currentUserEmail") ?: ""
 
         fetchLikedUsers()
-
-
     }
 
-
-
-    fun back(view:View)
-    {
+    fun back(view: View) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
 
     fun mesajGit(view: View) {
-        // Firestore veritabanına erişim sağla
-        val db = FirebaseFirestore.getInstance()
+        val position = recyclerView.getChildAdapterPosition(view)
+        if (position != RecyclerView.NO_POSITION) {
+            val likedUser = likedUsersList[position]
+            val receiverUID = likedUser.likerUid
 
-        // Veritabanından likedEmail değerini al
-        db.collection("likes").get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val likerEmail = document.getString("likerEmail") ?: ""
-
-                    // Veriyi başka bir sayfaya göndermek için Intent oluştur
-                    val intent = Intent(applicationContext, messageActivity::class.java)
-                    intent.putExtra("likerEmail", likerEmail)
-                    startActivity(intent)
-                    return@addOnSuccessListener  // İlk belge bulunduğunda işlemi sonlandır
-                }
-                Log.d(TAG, "Belge bulunamadı.")
-            }
-            .addOnFailureListener { exception ->
-                Log.d(TAG, "Veri alınamadı: ", exception)
-            }
+            val intent = Intent(this, messageActivity::class.java)
+            intent.putExtra("receiverUID", receiverUID)
+            startActivity(intent)
+        }
     }
-
 
     private fun fetchLikedUsers() {
         database.collection("likes")
@@ -85,9 +69,10 @@ class rightSwipeActivity : AppCompatActivity() {
                             val likerEmail = document.getString("likerEmail") ?: ""
                             val likerFullName = document.getString("likerFullName") ?: ""
                             val likerImageUrl = document.getString("likerImageUrl") ?: ""
+                            val likerUid = document.getString("likerUid") ?: ""
                             val likedEmail = document.getString("likedEmail") ?: ""
                             val likedUserData = LikedUserData(
-                                likerEmail, likerFullName, likerImageUrl, likedEmail
+                                likerEmail, likerFullName, likerImageUrl, likedEmail, likerUid
                             )
                             likedUsersList.add(likedUserData)
                         }
